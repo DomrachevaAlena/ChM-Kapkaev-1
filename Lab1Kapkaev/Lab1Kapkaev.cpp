@@ -1,36 +1,22 @@
-﻿// Lab1Kapkaev.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <math.h>
 #include <string>
+
 #include "TestTask.hpp"
 #include "TaskOne.hpp"
 #include "TaskTwo.hpp"
 
 using namespace std;
 
-double secondFunction(double x, double u)
-{
-    return 0;
-}
-
-int main()
+//Я местами a и b поменял, нужно приветси вход в соответсвие с изменениями
+void uiRelise()
 {
     setlocale(LC_ALL, "Russian");
 
-    char choise;
+    char choise,type;
 
-    double a, b, h,eps,u0;
-
-    cout << "Введите a"<<endl;
-    cin >> a;
-    cout << "Введите b" << endl;
-    cin >> b;
-    cout << "Введите h" << endl;
-    cin >> h;
-    cout << "Введите eps" << endl;
-    cin >> eps;
+    double a, b, h, eps, u0,N,u1,epsGr;
 
     cout << endl;
     cout << "Выбирите задачу:\n";
@@ -41,56 +27,143 @@ int main()
     cin >> choise;
 
     cout << endl;
-    switch (choise)
+    cout << "Выбирите тип шага:\n";
+    cout << "0 - Постоянный;\n";
+    cout << "1 - Переменный;\n";
+
+    cin >> type;
+
+    switch (type)
     {
     case('0'):
-        cout << "Введите u0" << endl;
-        cin >> u0;
+        switch (choise)
+        {
+        case('0'):
+            cout << "Введите a"<<endl;
+            cin >> a;
+            cout << endl <<"Введите b" << endl;
+            cin >> b;
+            cout << endl << "Введите u0" << endl;
+            cin >> u0;
+            cout << endl << "Введите число шагов" << endl;
+            cin >> N;
 
-        cout << endl;
-        cout << "---------------------------ПОСТОЯННЫЙ ШАГ---------------------------" << endl;
-        cout << endl;
-        testTask(a, b, h, b);
+            cout << endl;
 
-        cout << endl;
-        cout << "---------------------------ПЕРЕМЕННЫЙ ШАГ---------------------------" << endl;
-        cout << endl;
-        testTask(a,1,h,b,eps);
+            testTask(a,u0,N,b);
+            break;
+        case('1'):
+            cout << "Введите a" << endl;
+            cin >> a;
+            cout << endl << "Введите b" << endl;
+            cin >> b;
+            cout << endl << "Введите u0" << endl;
+            cin >> u0;
+            cout << endl << "Введите число шагов" << endl;
+            cin >> N;
+
+            cout << endl;
+
+           taskOne(a, u0, N, b);
+            break;
+        case('2'):
+            cout << "Введите a" << endl;
+            cin >> a;
+            cout << endl << "Введите b" << endl;
+            cin >> b;
+            cout << endl << "Введите u01" << endl;
+            cin >> u0;
+            cout << endl << "Введите u02" << endl;
+            cin >> u1;
+            cout << endl << "Введите число шагов" << endl;
+            cin >> N;
+
+            cout << endl;
+
+            taskTwo(a, { u0 ,u1}, N, b);
+            break;
+        default:
+            cout << "Такого пункта нет :/";
+            break;
+        }
         break;
     case('1'):
-        cout << "Введите u0" << endl;
-        cin >> u0;
+        switch (choise)
+        {
+        case('0'):
+            cout << "Введите a" << endl;
+            cin >> a;
+            cout << endl << "Введите b" << endl;
+            cin >> b;
+            cout << endl << "Введите начальный шаг" << endl;
+            cin >> h;
+            cout << endl << "Введите u0" << endl;
+            cin >> u0;
+            cout << endl << "Введите eps" << endl;
+            cin >> eps;
+            cout << endl << "Введите eps граничное" << endl;
+            cin >> epsGr;
+            cout << endl;
 
-        cout << endl;
-        cout << "---------------------------ПОСТОЯННЫЙ ШАГ---------------------------" << endl;
-        cout << endl;
-        taskOne(a, b, h, b);
+            testTask(a, u0, h, b,eps,epsGr);
+            break;
+        case('1'):
+            cout << "Введите a" << endl;
+            cin >> a;
+            cout << endl << "Введите b" << endl;
+            cin >> b;
+            cout << endl << "Введите начальный шаг" << endl;
+            cin >> h;
+            cout << endl << "Введите u0" << endl;
+            cin >> u0;
+            cout << endl << "Введите eps" << endl;
+            cin >> eps;
+            cout << endl << "Введите eps граничное" << endl;
+            cin >> epsGr;
+            cout << endl;
 
-        cout << endl;
-        cout << "---------------------------ПЕРЕМЕННЫЙ ШАГ---------------------------" << endl;
-        cout << endl;
-        taskOne(a, 1, h, b, eps);
-        break;
-    case('2'):
-        double u01, u02;
-        cout << "Введите u01" << endl;
-        cin >> u01;
+            cout << endl;
 
-        cout << "Введите u01" << endl;
-        cin >> u02;
+            taskOne(a, u0, h, b, eps, epsGr);
+            break;
+        case('2'):
+            cout << "Введите a" << endl;
+            cin >> a;
+            cout << endl << "Введите b" << endl;
+            cin >> b;
+            cout << endl << "Введите начальный шаг" << endl;
+            cin >> h;
+            cout << endl << "Введите u01" << endl;
+            cin >> u0;
+            cout << endl << "Введите u02" << endl;
+            cin >> u1;
+            cout << endl << "Введите eps" << endl;
+            cin >> eps;
+            cout << endl << "Введите eps граничное" << endl;
+            cin >> epsGr;
+            cout << endl;
 
-        cout << endl;
-        cout << "---------------------------ПОСТОЯННЫЙ ШАГ---------------------------" << endl;
-        cout << endl;
-        taskTwo(a, { u01, u02 }, h, b, eps);
+            cout << endl;
 
-        cout << endl;
-        cout << "---------------------------ПЕРЕМЕННЫЙ ШАГ---------------------------" << endl;
-        cout << endl;
-        taskTwo(a, {u01, u02}, h, b, eps);
+            taskTwo(a, { u0 ,u1 }, h, b, eps, epsGr);
+            break;
+        default:
+            cout << "Такого пункта нет :/";
+            break;
+        }
         break;
     default:
         cout << "Такого пункта нет :/";
         break;
     }
+}
+
+void uiTest()
+{
+    testTask(0,1, 0.001,1.05,0.0001,0.001);
+}
+
+int main()
+{
+    uiRelise();
 }

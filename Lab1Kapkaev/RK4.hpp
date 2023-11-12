@@ -35,15 +35,15 @@ vector<double> rk4Step(const vector<double(*)(double x, const vector<double>& v,
 
 		k4 = f[i](x + h, tmp, consts);
 
-		res.push_back(v[i] + (h * (k1 + 2.0 * k2 + 2.0 * k3 + k4)) / 6.0);
+		res.push_back(v[i] + h/ 6.0 * (k1 + 2.0 * k2 + 2.0 * k3 + k4));
 	}
 
 	return res;
 }
 
-Table* rk4ConstStep(const vector<double(*)(double x, const vector<double>& v, const vector<double>& consts)> &f, double x0,const vector<double> &v,const vector<double> &consts, double h, double xLast)
+MyTable* rk4ConstStep(const vector<double(*)(double x, const vector<double>& v, const vector<double>& consts)> &f, double x0,const vector<double> &v,const vector<double> &consts, double N, double xLast)
 {
-	Table* table = new Table(v.size());
+	MyTable* table = new MyTable(v.size());
 
 	size_t iter = 0;
 	double xi = x0;
@@ -51,28 +51,28 @@ Table* rk4ConstStep(const vector<double(*)(double x, const vector<double>& v, co
 	vector<double> vi = v;
 	vector<double> v2i = v;
 
+	double h = (xLast - x0) / N;
+
 	table->addRow(xi, vi, v2i, h, 0.0, 0.0);
 
-	while (xi <= xLast && iter < MAX_ITER)
+	for (int i = 1; i < N && i < MAX_ITER; i++)
 	{
-		xi = xi + h;
-
-		tmp = rk4Step(f, xi, vi,consts, h / 2.0);
-		v2i = rk4Step(f, xi, tmp,consts, h / 2.0);
+		tmp = rk4Step(f, xi, vi, consts, h / 2.0);
+		v2i = rk4Step(f, xi+h/2.0, tmp, consts, h / 2.0);
 
 		vi = rk4Step(f, xi, vi, consts, h);
+
+		xi = x0 + h * i;
 
 		table->addRow(xi, vi, v2i, h, 0.0, 0.0);
 	}
 
-	table->printTable();
-
 	return table;
 }
 
-Table* rk4VariableStep(const vector<double(*)(double x, const vector<double>& v, const vector<double>& consts)> &f, double x0, const vector<double>& v, const vector<double>& consts, double h, double xLast, double eps)
+MyTable* rk4VariableStep(const vector<double(*)(double x, const vector<double>& v, const vector<double>& consts)> &f, double x0, const vector<double>& v, const vector<double>& consts, double h, double xLast, double eps,double epsGr)
 {
-	Table* table = new Table(v.size());
+	MyTable* table = new MyTable(v.size());
 
 	size_t iter = 0;
 	double xi = x0, maxS = 0.0, C1 = 0.0, C2 = 0.0;
@@ -83,13 +83,13 @@ Table* rk4VariableStep(const vector<double(*)(double x, const vector<double>& v,
 
 	table->addRow(xi, vi, v2i, h, 0.0, 0.0);
 
-	while (xi <= xLast && iter<MAX_ITER)
+	while ((xi+h) <= xLast && iter<MAX_ITER)
 	{
-		v2i = rk4Step(f, xi + h / 2.0, vi, consts, h / 2.0);
+		v2i = rk4Step(f, xi, vi, consts, h / 2.0);
 		v2i = rk4Step(f, xi + h / 2.0, v2i, consts, h / 2.0);
 
 		viPrev = vi;
-		vi = rk4Step(f, xi + h, vi, consts, h);
+		vi = rk4Step(f, xi, vi, consts, h);
 
 		for (int i = 0; i < vi.size(); i++)
 			S.push_back((vi[i] - v2i[i]) / 15.0);
@@ -124,7 +124,39 @@ Table* rk4VariableStep(const vector<double(*)(double x, const vector<double>& v,
 		S.clear();
 	}
 
-	table->printTable();
+	if (xi < (xLast - epsGr))
+	{
+		double h1 = (xLast - xi) / 2.0;
+
+		while (xi < xLast-epsGr || maxS > eps)
+		{
+			v2i = rk4Step(f, xi, vi, consts, h1 / 2.0);
+			v2i = rk4Step(f, xi + h1 / 2.0, v2i, consts, h1 / 2.0);
+
+			viPrev = vi;
+			vi = rk4Step(f, xi, vi, consts, h1);
+
+			for (int i = 0; i < vi.size(); i++)
+				S.push_back((vi[i] - v2i[i]) / 15.0);
+
+			for (int i = 0; i < S.size(); i++)
+				if (maxS < abs(S[i]))
+					maxS = abs(S[i]);
+
+			S.clear();
+
+			if (maxS > eps)
+			{
+				h1 = h1 / 2.0;
+				vi = viPrev;
+			}
+			else if(xi < xLast - epsGr)
+			{
+				xi = xi + h1;
+				table->addRow(xi, vi, v2i, h1, C1, C2);
+			}
+		}
+	}
 
 	return table;
 }
