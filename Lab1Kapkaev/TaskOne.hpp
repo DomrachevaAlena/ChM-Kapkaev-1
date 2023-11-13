@@ -1,5 +1,4 @@
 #pragma once
-#include "TestTask.hpp"
 #include "Table.hpp"
 #include "RK4.hpp"
 #include "PrintSpravka.hpp"
@@ -20,7 +19,7 @@ void showRes(MyTable* res,double b)
 	plt::suptitle("Task one");
 	plt::xlabel("X");
 	plt::ylabel("V / U");
-	plt::plot(Xi, Vi, { {"color", "red"}, { "linestyle", "--" } });
+	plt::plot(Xi, Vi, { {"color", "red"}});
 	plt::show();
 #endif
 }

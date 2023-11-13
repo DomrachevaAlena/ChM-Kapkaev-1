@@ -16,7 +16,7 @@ void uiRelise()
 
     char choise,type;
 
-    double a, b, h, eps, u0,N,u1,epsGr;
+    double a, b, h, eps, u0,N,u1,epsGr,constant;
 
     cout << endl;
     cout << "Выбирите задачу:\n";
@@ -77,10 +77,12 @@ void uiRelise()
             cin >> u1;
             cout << endl << "Введите число шагов" << endl;
             cin >> N;
+            cout << endl << "Введите параметр" << endl;
+            cin >> constant;
 
             cout << endl;
 
-            taskTwo(a, { u0 ,u1}, N, b);
+            taskTwo(a, { u0 ,u1}, N, b,constant);
             break;
         default:
             cout << "Такого пункта нет :/";
@@ -142,10 +144,11 @@ void uiRelise()
             cout << endl << "Введите eps граничное" << endl;
             cin >> epsGr;
             cout << endl;
-
+            cout << endl << "Введите параметр" << endl;
+            cin >> constant;
             cout << endl;
 
-            taskTwo(a, { u0 ,u1 }, h, b, eps, epsGr);
+            taskTwo(a, { u0 ,u1 }, h, b, eps, epsGr,constant);
             break;
         default:
             cout << "Такого пункта нет :/";
@@ -160,10 +163,14 @@ void uiRelise()
 
 void uiTest()
 {
-    testTask(0,1, 0.001,1.05,0.0001,0.001);
+    taskTwo(-2, { 2 ,8 }, 1000, 8, 1/6);
+    //taskOne(1.8, 1, 100, 3.00);
 }
+
 
 int main()
 {
-    uiRelise();
+    uiTest();
+
+
 }

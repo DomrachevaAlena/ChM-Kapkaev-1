@@ -12,31 +12,32 @@ using namespace std;
 
 vector<double> rk4Step(const vector<double(*)(double x, const vector<double>& v, const vector<double>& consts)> &f, double x,const vector<double> &v, const vector<double> &consts, double h)
 {
-	double k1, k2, k3, k4;
-	vector<double> res;
-	vector<double> tmp(v.size());
+	vector<double> k1, k2, k3, k4, res;
+	vector<double> currentV(v.size());
 
 	for (int i = 0; i < f.size(); i++)
-	{
-		k1 = f[i](x, v,consts);
+		k1.push_back(f[i](x, v, consts));
 
-		for (int j = 0; j < v.size(); j++)
-			tmp[i] = v[i] + (h * k1) / 2.0;
+	for (int i = 0; i < v.size(); i++)
+		currentV[i] = v[i]+ (h * k1[i]) / 2.0;
 
-		k2 = f[i](x + h / 2.0, tmp, consts);
+	for (int i = 0; i < f.size(); i++)
+		k2.push_back(f[i](x+h/2.0,currentV, consts));
 
-		for (int j = 0; j < v.size(); j++)
-			tmp[i] = v[i] + (h * k2) / 2.0;
+	for (int i = 0; i < v.size(); i++)
+		currentV[i] = v[i] + (h * k2[i]) / 2.0;
 
-		k3 = f[i](x + h / 2.0, tmp, consts);
+	for (int i = 0; i < f.size(); i++)
+		k3.push_back(f[i](x+h/2.0, currentV, consts));
 
-		for (int j = 0; j < v.size(); j++)
-			tmp[i] = v[i] + h * k3;
+	for (int i = 0; i < v.size(); i++)
+		currentV[i] = v[i] + h * k3[i];
 
-		k4 = f[i](x + h, tmp, consts);
+	for (int i = 0; i < f.size(); i++)
+		k4.push_back(f[i](x+h, currentV, consts));
 
-		res.push_back(v[i] + h/ 6.0 * (k1 + 2.0 * k2 + 2.0 * k3 + k4));
-	}
+	for (int i = 0; i < f.size(); i++)
+		res.push_back(v[i] + h / 6.0 * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]));
 
 	return res;
 }
@@ -55,14 +56,14 @@ MyTable* rk4ConstStep(const vector<double(*)(double x, const vector<double>& v, 
 
 	table->addRow(xi, vi, v2i, h, 0.0, 0.0);
 
-	for (int i = 1; i < N && i < MAX_ITER; i++)
+	for (int i = 1; i <= N && i < MAX_ITER; i++)
 	{
 		tmp = rk4Step(f, xi, vi, consts, h / 2.0);
 		v2i = rk4Step(f, xi+h/2.0, tmp, consts, h / 2.0);
 
 		vi = rk4Step(f, xi, vi, consts, h);
 
-		xi = x0 + h * i;
+		xi = x0 + (xLast - x0) / N * i;
 
 		table->addRow(xi, vi, v2i, h, 0.0, 0.0);
 	}
